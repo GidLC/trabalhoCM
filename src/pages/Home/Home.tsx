@@ -3,6 +3,8 @@ import { View, StyleSheet, Text, Image } from 'react-native'
 import Botao from '../../components/Botao/Botao'
 import Input from '../../components/Input/Input'
 import { validaEmail } from '../../funcoes/ValidaEmail/ValidaEmail'
+import { collection, getDocs, doc, getDoc, query, where } from 'firebase/firestore'
+import { db } from '../../services/firebaseConfig'
 
 type UsuarioType = {
     email: string,
@@ -13,13 +15,34 @@ const Home = ({ navigation }) => {
     const [email, setEmail] = useState<string>('');
     const [senha, setSenha] = useState<string>('');
 
-    const eventoSubmit = () => {
+    const eventoSubmit = async () => {
         if (!email || !senha) {
             alert("Todos campos precisam ser preenchidos")
         } else {
             if (validaEmail({ email })) {
-                console.log({ email, senha })
-                navigation.navigate('Chat')
+                try {
+                    /*const querySnapshot = await getDocs(collection(db, "usuarios"))
+                    querySnapshot.forEach((doc) => {
+                        console.log(`${doc.id} => ${JSON.stringify(doc.data())}`)
+                    })*/
+
+                    const usuariosRef = collection(db, "usuarios")
+
+                    const querySnapshot = query(usuariosRef, where("email", "==", email))
+                    if(querySnapshot) {
+                        const usuarios = await getDocs(querySnapshot)
+                        usuarios.forEach((usuario) => {
+                            if(usuario.data().senha == senha) {
+                                navigation.navigate('Chat')
+                            } else {
+                                alert("Senha Incorreta")
+                            }
+                        })
+                    }
+
+                } catch (error) {
+                    console.error("Erro ao encontrar usuário")
+                }
             } else {
                 alert("Esse E-mail não é um domínio válido do IFPR")
             }

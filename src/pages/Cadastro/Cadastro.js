@@ -4,6 +4,8 @@ import Input from '../../components/Input/Input';
 import Botao from '../../components/Botao/Botao';
 import Select from '../../components/Select/Select';
 import { validaEmail } from '../../funcoes/ValidaEmail/ValidaEmail';
+import { db } from '../../services/firebaseConfig';
+import { collection, addDoc } from "firebase/firestore";
 
 const Cadastro = ({ navigation }) => {
   const [nome, setNome] = useState('');
@@ -11,20 +13,22 @@ const Cadastro = ({ navigation }) => {
   const [senha, setSenha] = useState('');
   const [tipoConta, setTipoConta] = useState('')
 
-  const eventoSubmit = () => {
+  const eventoSubmit = async () => {
     if (!email || !nome || !senha || !tipoConta) {
       alert("Todos campos precisam ser preenchidos")
     } else {
       if (validaEmail({ email })) {
-        alert("Cadastro realizado com sucesso")
-        console.log({
-          nome,
-          email,
-          senha
-        })
-        setEmail('')
-        setNome('')
-        setSenha('')
+        try {
+          const resultado = await addDoc(collection(db, "usuarios"), {
+            nome,
+            email,
+            senha,
+            tipoConta
+          })
+          alert("Usuário cadastrado com sucesso", resultado.id)
+        } catch (error) {
+          console.error("Erro ao cadastrar usuário", error)
+        }
 
         navigation.navigate('Home')
       } else {

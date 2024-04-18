@@ -13,8 +13,8 @@ const AppRoutes = () => {
         <NavigationContainer>
             <Stack.Navigator initialRouteName="Home">
                 <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-                <Stack.Screen name="Cadastro" component={Cadastro} options={{ headerShown: false }} />
-                <Stack.Screen name="Chat" component={Chat} options={{ headerShown: false }} />
+                <Stack.Screen name="Cadastro" component={Cadastro} options={{ headerShown: true }} />
+                <Stack.Screen name="Chat" component={Chat} options={{ headerShown: true }} />
             </Stack.Navigator>
         </NavigationContainer>
     )
